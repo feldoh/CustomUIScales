@@ -9,3 +9,4 @@ Note that if you manage to do something weird like make the UI so small you can'
 ## Attribution
 * Ludeon for such a great game with excellent mod support.
 * This mod was made for [MrSamuelStreamer](https://www.youtube.com/c/MrSamStreamer)
+* Ranger Rick for the 1.5 corner tag

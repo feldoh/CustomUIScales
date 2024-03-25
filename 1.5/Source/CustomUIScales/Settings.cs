@@ -14,7 +14,7 @@ namespace CustomUIScales
 
 		public void DoWindowContents(Rect wrect)
 		{
-			var options = new Listing_Standard();
+			Listing_Standard options = new Listing_Standard();
 			options.Begin(wrect);
 
 			options.TextFieldNumericLabeled("UI Scale", ref UIScale, ref _uiScaleBuffer, -0.999f, float.MaxValue);

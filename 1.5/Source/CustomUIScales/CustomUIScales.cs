@@ -4,7 +4,7 @@ using Verse;
 namespace CustomUIScales
 {
 	[StaticConstructorOnStartup]
-	public class CustomUIScalesMod : Verse.Mod
+	public class CustomUIScalesMod : Mod
 	{
 		public static Settings Settings;
 

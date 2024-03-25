@@ -4,6 +4,7 @@
 	<author>Taggerung</author>
 	<supportedVersions>
 		<li>1.4</li>
+		<li>1.5</li>
 	</supportedVersions>
 	<packageId>Taggerung.CustomUIScales</packageId>
 	<description>Allow more custom UI scales than the ones in the normal list</description>
