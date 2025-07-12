@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AllowedReferenceRelatedFileExtensions>None</AllowedReferenceRelatedFileExtensions>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>CustomUIScales</RootNamespace>
+    <AssemblyName>CustomUIScales</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SteamModsPath>$(RIMWORLD_STEAM_MODS_PATH)</SteamModsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>../../Assemblies/</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>../../Assemblies/</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>D:/SteamLibrary/steamapps/common/RimWorld/RimWorldWin64_Data/Managed/Assembly-CSharp.dll</HintPath>
+      <HintPath>../../../../../RimWorldWin64_Data/Managed/Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+        <HintPath>D:/SteamLibrary/steamapps/common/RimWorld/RimWorldWin64_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
+        <HintPath>../../../../../RimWorldWin64_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ReleaseFiles Include="../../../1.*/**" Exclude="../../../1.*/Source/**;**/*.pdb" />
+    <AboutFiles Include="../../../About/**" Exclude="../../../About/*.*~" />
+    <CommonFiles Include="../../../Common/**" />
+    <ExtraFiles Include="../../../LoadFolders.xml;../../../LICENSE;../../../README.md" />
+    <None Include="../../../Assets/**" LinkBase="Assets" />
+    <None Include="../../../.editorconfig;../../../.gitignore;../../../.gitattributes" />
+  </ItemGroup>
+  <!-- Add A step to the build to run csharpier on build -->
+  <Target Name="CheckCsharpier" BeforeTargets="Build">
+    <Exec Command="dotnet csharpier --version" IgnoreExitCode="true">
+      <Output TaskParameter="ExitCode" PropertyName="ExitCode"/>
+    </Exec>
+  </Target>
+  <Target Name="FormatCode" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Release' And '$(ExitCode)' == '0' " DependsOnTargets="CheckCsharpier">
+    <Exec Command="dotnet csharpier ." />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="Build" Condition=" '$(Configuration)' == 'Release' ">
+    <RemoveDir Condition="Exists('../../../Release')" Directories="../../../Release" />
+    <Delete Condition="Exists('../../../CustomUIScales.zip')" Files="../../../CustomUIScales.zip" />
+    <Copy SourceFiles="@(AboutFiles)" DestinationFiles="@(AboutFiles->'../../../Release/About/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(CommonFiles)" DestinationFiles="@(CommonFiles->'../../../Release/Common/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ReleaseFiles)" DestinationFiles="@(ReleaseFiles->'../../../Release/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" />
+    <Copy SourceFiles="@(ExtraFiles)" DestinationFolder="../../../Release/" SkipUnchangedFiles="false" />
+    <ZipDirectory DestinationFile="../../../CustomUIScales.zip" SourceDirectory="../../../Release" />
+
+    <ItemGroup>
+        <ReleaseFolder Include="../../../Release/**" />
+        <ReleaseFolder Condition=" '$(Configuration)' == 'Debug' " Include="../../../1.*/Assemblies/*.pdb;../../../Compatibility/**/*.pdb" />
+    </ItemGroup>
+    <RemoveDir Condition="Exists('$(SteamModsPath)') And Exists('$(SteamModsPath)/CustomUIScales')" Directories="$(SteamModsPath)/CustomUIScales" ContinueOnError="true"/>
+    <Copy Condition="Exists('$(SteamModsPath)') And !Exists('$(SteamModsPath)/CustomUIScales')" SourceFiles="@(ReleaseFolder)" DestinationFiles="@(ReleaseFolder->'$(SteamModsPath)/CustomUIScales/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(SolutionDir)../../../../RimWorldWin64.exe</StartProgram>
+  </PropertyGroup>
+</Project>
